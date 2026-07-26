@@ -50,5 +50,7 @@ class Facts:
 
     def get_all_facts(self):
         return self.preconds
+    def get_all_objects(self):
+        return self.objects
 
 facts = Facts("r_fact3.txt")
