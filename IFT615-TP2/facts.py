@@ -53,4 +53,4 @@ class Facts:
     def get_all_objects(self):
         return self.objects
 
-facts = Facts("r_fact3.txt")
+facts = Facts("r_fact9.txt")
