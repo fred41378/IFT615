@@ -1,5 +1,4 @@
 from itertools import product
-from tkinter import Place
 
 from input import read_inputs
 import parser
