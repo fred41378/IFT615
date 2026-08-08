@@ -1,0 +1,28 @@
+
+    (Sherbrooke PLACE)
+    (SJR PLACE)
+    (Boucherville PLACE)
+    (Montreal PLACE)
+    (r1 ROCKET)
+    (r2 ROCKET)
+    (r3 ROCKET)
+    (alex CARGO)
+    (Frederick CARGO)
+    (bill CARGO)
+
+    (preconds
+    (at r1 Sherbrooke)
+    (at r2 Sherbrooke)
+    (at r3 Boucherville)
+    (at alex Sherbrooke)
+    (at Frederick Sherbrooke)
+    (at bill Boucherville)
+    (has-fuel r1)
+    (has-fuel r2)
+    (has-fuel r3))
+
+    (effects
+    (at alex SJR)
+    (at Frederick Boucherville)
+    (at bill Montreal))
+
