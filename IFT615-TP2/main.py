@@ -1,5 +1,5 @@
-import parser
 from input import read_inputs
+from parser import facts
 
 # Tous les facts sont contenus dans cette variables
 all_facts = None
