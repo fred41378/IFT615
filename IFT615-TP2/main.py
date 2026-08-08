@@ -128,30 +128,47 @@ def goal_reachable(prop_layer, prop_mutex, goal):
 
 
 
-def select_action_sets(goals, chosen, act_layer, act_mutex):
+def build_achievers_index(act_layer):
+    # associe chaque fait produit a la liste des actions qui l'ont engendré
+    index = {}
+    for a in act_layer:
+        for p in a[2]:
+            index.setdefault(p, []).append(a)
+    for p in index:
+        index[p].sort(key=lambda act: (0 if act[0].startswith("persist") else 1, len(act[1])))
+    return index
+
+
+def build_mutex_adjacency(act_mutex):
+    # associe chaque action a l'ensemble des actions avec lesquelles elle est mutex
+    adj = {}
+    for pair in act_mutex:
+        a1, a2 = tuple(pair)
+        adj.setdefault(a1, set()).add(a2)
+        adj.setdefault(a2, set()).add(a1)
+    return adj
+
+def select_action_sets(goals, chosen, achiever_index, mutex_adj):
     # Choisi une action pour chaque fait du goal, sans
     # jamais prendre deux actions mutex ensemble
+
     if not goals:
         yield list(chosen)
         return
 
     goal, rest = goals[0], goals[1:]
 
-    achievers = [a for a in act_layer if goal in a[2]]
-
-    achievers.sort(
-        key=lambda a: (0 if a[0].startswith("persist") else 1,len(a[1]))
-    )
+    achievers = achiever_index.get(goal, [])
 
     for a in achievers:
-        if any(frozenset((a, c)) in act_mutex for c in chosen):
+        a_mutex = mutex_adj.get(a, ())
+        if any(c in a_mutex for c in chosen):
             continue
 
         next_chosen = chosen if a in chosen else chosen + [a]
-        yield from select_action_sets(rest, next_chosen, act_layer, act_mutex)
+        yield from select_action_sets(rest, next_chosen, achiever_index, mutex_adj)
 
-
-def backtrack_search(act_layers, act_mutexes, prop_layers, goal, level, no_goods):
+def backtrack_search(act_layers, act_mutexes, prop_layers, goal, level, no_goods, achiever_indexes, mutex_adjacencies):
     # Recherche en arriere
 
     # au niveau 0 le but doit deja etre vrai dans l'etat initial
@@ -162,18 +179,49 @@ def backtrack_search(act_layers, act_mutexes, prop_layers, goal, level, no_goods
     if key in no_goods:
         return None
 
-    act_layer, act_mutex = act_layers[level - 1], act_mutexes[level - 1]
-    for action_set in select_action_sets(list(goal), [], act_layer, act_mutex):
+    achiever_index = achiever_indexes[level - 1]
+    mutex_adj = mutex_adjacencies[level - 1]
+
+    goals_sorted = sorted(goal, key=lambda g: len(achiever_index.get(g, [])))
+
+    for action_set in select_action_sets(goals_sorted, [], achiever_index, mutex_adj):
         preconds = set()
         for a in action_set:
             preconds |= a[1]
-        sub_plan = backtrack_search(act_layers, act_mutexes, prop_layers, preconds, level - 1, no_goods)
+        sub_plan = backtrack_search(act_layers, act_mutexes, prop_layers, preconds, level - 1,
+                                    no_goods, achiever_indexes, mutex_adjacencies)
+
         if sub_plan is not None:
             real_actions = [a for a in action_set ]
             return sub_plan + [real_actions]
 
     no_goods.add(key)
     return None
+
+
+def trace_niveau(level, act_layer, act_mutex, props, prop_mutex):
+    actions = [a for a in act_layer if not a[0].startswith("persist")]
+    mutex = [m for m in act_mutex
+             if not any(a[0].startswith("persist") for a in m)]
+
+    print(f"\n=== Niveau {level} ===")
+
+    print(f" Actions possible ({len(actions)}) :")
+    for a in sorted(actions, key=lambda a: a[0]):
+        print(f"   {a[0]}")
+
+    print(f" Mutex d'actions ({len(mutex)}) :")
+    for m in sorted(tuple(sorted(a[0] for a in pair)) for pair in mutex):
+        print(f"   {m[0]} <-> {m[1]}")
+
+    print(f" Faits ({len(props)}) :")
+    for p in sorted(f"{p[0]}({','.join(p[1:])})" for p in props):
+        print(f"   {p}")
+
+    print(f" Mutex de faits ({len(prop_mutex)}) :")
+    for m in sorted(tuple(sorted(f"{m[0]}({','.join(m[1:])})" for p in pair))
+                    for pair in prop_mutex):
+        print(f"   {m[0]} <-> {m[1]}")
 
 
 def resoudre(initial_state, goal, all_act):
@@ -188,13 +236,15 @@ def resoudre(initial_state, goal, all_act):
     propositions_mutexes = [set()]
     action_layer = []
     actions_mutexes = []
+    achiever_indexes = []
+    mutex_adjacencies = []
     no_goods = set()
     leveled_off_at = None
 
     for level in range(max_levels):
         # On tente d'extraire un plan seulement si le but semble atteignable.
         if goal_reachable(all_proposition[-1], propositions_mutexes[-1], goal):
-            plan = backtrack_search(action_layer, actions_mutexes, all_proposition, goal, level, no_goods)
+            plan = backtrack_search(action_layer, actions_mutexes, all_proposition, goal, level, no_goods, achiever_indexes, mutex_adjacencies)
             if plan is not None:
                 return plan
 
@@ -215,8 +265,10 @@ def resoudre(initial_state, goal, all_act):
         action_layer.append(applicable)
         actions_mutexes.append(act_mutex)
         all_proposition.append(next_props)
+        achiever_indexes.append(build_achievers_index(applicable))
+        mutex_adjacencies.append(build_mutex_adjacency(act_mutex))
         propositions_mutexes.append(next_prop_mutex)
-
+        trace_niveau(level, applicable, act_mutex, next_props, next_prop_mutex)
     return None
 
 
