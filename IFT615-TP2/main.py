@@ -206,6 +206,10 @@ def backtrack_search(act_layers, act_mutexes, prop_layers, goal, level, no_goods
     no_goods.add(key)
     return None
 
+def format_action(nom):
+    op, args = nom.split("(", 1)
+    args = args.rstrip(")").split(",")
+    return "_".join([op.upper()] + args)
 
 def trace_niveau(level, act_layer, act_mutex, props, prop_mutex):
     actions = [a for a in act_layer if not a[0].startswith("persist")]
@@ -216,11 +220,11 @@ def trace_niveau(level, act_layer, act_mutex, props, prop_mutex):
 
     print(f" Actions possible ({len(actions)}) :")
     for a in sorted(actions, key=lambda a: a[0]):
-        print(f"   {a[0]}")
+        print(f"   {format_action(a[0])}")
 
     print(f" Mutex d'actions ({len(mutex)}) :")
     for m in sorted(tuple(sorted(a[0] for a in pair)) for pair in mutex):
-        print(f"   {m[0]} <-> {m[1]}")
+        print(f"   {format_action(m[0])} <-> {format_action(m[1])}")
 
     print(f" Faits ({len(props)}) :")
     for p in sorted(f"{p[0]}({','.join(p[1:])})" for p in props):
@@ -300,7 +304,7 @@ def DoPlan(r_ops, r_facts, trace=True):
             for action in actions:
                 if action[0].startswith("persist"):
                     continue
-                print(f"{action[0]}")
+                print(f"{format_action(action[0])}")
 
 
 def main():
