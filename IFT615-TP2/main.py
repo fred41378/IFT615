@@ -1,6 +1,8 @@
 import facts
 from input import read_inputs
 
+# Tous les facts sont contenus dans cette variables
+all_facts = None
 
 # Retourne la liste de toutes les actions possible peut importe s'il sont valide ou non
 def all_actions(objects):
@@ -222,11 +224,11 @@ def main():
         print("Erreur de lecture des fichiers: Abort")
         return
 
-    facts.create_fact(res[1])
+    all_facts = facts.Facts(res[1])
 
-    initial_state = set(facts.all_facts.preconds)
-    goal = set(facts.all_facts.effects)
-    all_act = all_actions(facts.all_facts.objects)
+    initial_state = set(all_facts.preconds)
+    goal = set(all_facts.effects)
+    all_act = all_actions(all_facts.objects)
 
     plan = resoudre(initial_state, goal, all_act)
 
