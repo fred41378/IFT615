@@ -1,4 +1,4 @@
-from facts import facts
+from parser import facts
 
 
 # Retourne la liste de toutes les actions possible peut importe s'il sont valide ou non
