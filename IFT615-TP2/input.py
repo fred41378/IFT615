@@ -6,6 +6,7 @@ INPUT_DIRECTORY_PATH = "inputs"
 def read_inputs():
     r_ops = ""
     r_facts = ""
+    silent = False
 
     #On permet de choisir r_ops et r_fact en console ou en ligne de commande
     if len(sys.argv) == 1:
@@ -14,9 +15,17 @@ def read_inputs():
     elif len(sys.argv) == 3:
         r_ops = sys.argv[1]
         r_facts = sys.argv[2]
+    elif len(sys.argv) == 4:
+        r_ops = sys.argv[1]
+        r_facts = sys.argv[2]
+        silent = sys.argv[3]
     else :
         print("Nombre d'arguments invalide: " + str(len(sys.argv)) + " (Expected 3)")
         return False
+
+    # si n'importe quoi est ecrit dans silent, on doit mettre en mode silent
+    if silent :
+        silent = True
 
     # Si le nom des fichiers n'ont pas l'extension, on doit la rajouter
     #   Ca permet de rendre le input plus facile et plus indulgeant
@@ -41,4 +50,4 @@ def read_inputs():
         return False
 
     # Retourne le path des fichiers des ops et des facts
-    return r_ops, r_facts
+    return r_ops, r_facts, not silent
