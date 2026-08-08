@@ -221,7 +221,7 @@ def trace_niveau(level, act_layer, act_mutex, props, prop_mutex):
         print(f"   {m[0]} <-> {m[1]}")
 
 
-def resoudre(initial_state, goal, all_act):
+def resoudre(initial_state, goal, all_act, trace=False):
     """
     :param initial_state: l'état initial des préconditions de facts
     :param goal: la liste des effects de facts (la but à atteindre)
@@ -265,7 +265,8 @@ def resoudre(initial_state, goal, all_act):
         achiever_indexes.append(build_achievers_index(applicable))
         mutex_adjacencies.append(build_mutex_adjacency(act_mutex))
         propositions_mutexes.append(next_prop_mutex)
-        trace_niveau(level, applicable, act_mutex, next_props, next_prop_mutex)
+        if trace:
+            trace_niveau(level, applicable, act_mutex, next_props, next_prop_mutex)
     return None
 
 
