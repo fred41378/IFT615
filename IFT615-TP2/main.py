@@ -218,19 +218,19 @@ def trace_niveau(level, act_layer, act_mutex, props, prop_mutex):
 
     print(f"\n=== Niveau {level} ===")
 
-    print(f" Actions possible ({len(actions)}) :")
+    print(f"\n Actions possible ({len(actions)}) :")
     for a in sorted(actions, key=lambda a: a[0]):
         print(f"   {format_action(a[0])}")
 
-    print(f" Mutex d'actions ({len(mutex)}) :")
+    print(f"\n Mutex d'actions ({len(mutex)}) :")
     for m in sorted(tuple(sorted(a[0] for a in pair)) for pair in mutex):
         print(f"   {format_action(m[0])} <-> {format_action(m[1])}")
 
-    print(f" Faits ({len(props)}) :")
+    print(f"\n Faits ({len(props)}) :")
     for p in sorted(f"{p[0]}({','.join(p[1:])})" for p in props):
         print(f"   {p}")
 
-    print(f" Mutex de faits ({len(prop_mutex)}) :")
+    print(f"\n Mutex de faits ({len(prop_mutex)}) :")
     for m in sorted(tuple(sorted(f"{p[0]}({','.join(m[1:])})" for p in pair))
                     for pair in prop_mutex):
         print(f"   {m[0]} <-> {m[1]}")
@@ -243,6 +243,13 @@ def resoudre(initial_state, goal, all_act, trace=False):
     :param all_act: toutes les actions possibles à partir des objets de facts
     :return: un plan fini
     """
+
+    # Si on a une trace, on doit print le header
+    if trace:
+        print("\n/*---------------------------------------------------------------------------------*/")
+        print("/*---------------------------------- Trace complete -------------------------------*/")
+        print("/*---------------------------------------------------------------------------------*/\n")
+
     max_levels = 50
     all_proposition = [frozenset(initial_state)]  # niveau 0 = etat initial
     propositions_mutexes = [set()]
@@ -296,15 +303,25 @@ def DoPlan(r_ops, r_facts, trace=True):
 
     plan = resoudre(initial_state, goal, all_act, trace)
 
+    # Si on a une trace, on doit print le header
+    if trace:
+        print("\n/*-------------------------------------------------------------------------------*/")
+        print("/* ---------------- Description des conditions initiales et des objectifs -------*/")
+        print("/*-------------------------------------------------------------------------------*/\n")
+
     if plan is None:
         print("Aucun plan trouver")
     else:
-        print(f"Plan trouver en {len(plan)} etapes :")
+        cpt_action = 0
+        print(f"Plan trouver en {len(plan)} etapes :\n")
         for actions in plan:
             for action in actions:
                 if action[0].startswith("persist"):
                     continue
+                cpt_action += 1
                 print(f"{format_action(action[0])}")
+
+        print(f"\nPlan finale en {cpt_action} actions")
 
 
 def main():

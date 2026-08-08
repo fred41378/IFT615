@@ -33,12 +33,12 @@ class Facts:
 
     def _load(self, filepath, trace = False):
 
-        # Si on a une trace, on doit print le outline
+        # Si on a une trace, on doit print le header
         if trace:
             print("/*-------------------------------------------------------------------------------*/")
             print("/* ---------------- Description des conditions initiales et des objectifs -------*/")
             print("/*-------------------------------------------------------------------------------*/")
-        
+
         expressions = parse_file(filepath, trace)
         for e in expressions:
             if e[0] == "preconds":
@@ -61,11 +61,11 @@ class Operator:
 def load_ops(filepath, trace = False):
     operators = []
 
-    # Si on a une trace, on doit print le outline
+    # Si on a une trace, on doit print le header
     if trace:
         print("/*-----------------------------------------------------------------------*/")
         print("/* -------------------------- Description des operateurs ----------------*/")
-        print("/*-----------------------------------------------------------------------*/")
+        print("/*-----------------------------------------------------------------------*/\n")
 
     expressions = parse_file(filepath, trace)
     for e in expressions:
