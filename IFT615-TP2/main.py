@@ -173,6 +173,31 @@ def backtrack_search(act_layers, act_mutexes, prop_layers, goal, level, no_goods
     return None
 
 
+def trace_niveau(level, act_layer, act_mutex, props, prop_mutex):
+    actions = [a for a in act_layer if not a[0].startswith("persist")]
+    mutex = [m for m in act_mutex
+             if not any(a[0].startswith("persist") for a in m)]
+
+    print(f"\n=== Niveau {level} ===")
+
+    print(f" Actions possible ({len(actions)}) :")
+    for a in sorted(actions, key=lambda a: a[0]):
+        print(f"   {a[0]}")
+
+    print(f" Mutex d'actions ({len(mutex)}) :")
+    for m in sorted(tuple(sorted(a[0] for a in pair)) for pair in mutex):
+        print(f"   {m[0]} <-> {m[1]}")
+
+    print(f" Faits ({len(props)}) :")
+    for p in sorted(f"{p[0]}({','.join(p[1:])})" for p in props):
+        print(f"   {p}")
+
+    print(f" Mutex de faits ({len(prop_mutex)}) :")
+    for m in sorted(tuple(sorted(f"{m[0]}({','.join(m[1:])})" for p in pair))
+                    for pair in prop_mutex):
+        print(f"   {m[0]} <-> {m[1]}")
+
+
 def resoudre(initial_state, goal, all_act):
     """
     :param initial_state: l'état initial des préconditions de facts
@@ -213,7 +238,7 @@ def resoudre(initial_state, goal, all_act):
         actions_mutexes.append(act_mutex)
         all_proposition.append(next_props)
         propositions_mutexes.append(next_prop_mutex)
-
+        trace_niveau(level, applicable, act_mutex, next_props, next_prop_mutex)
     return None
 
 
