@@ -1,5 +1,12 @@
-from itertools import product
+# TP realise dans le cadre du cours IFT615 - Introduction à l’intelligence artificielle
+# Presente a Mohamed Mehdi Najjar
+# Equipe:
+#   Anais Lanthier
+#   Frederick Taylor
+#   Maxime Sevigny
+#   Emile Robitaille
 
+from itertools import product
 from input import read_inputs
 import parser
 
