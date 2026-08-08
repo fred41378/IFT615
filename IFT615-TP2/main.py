@@ -236,8 +236,11 @@ def main():
         print("Aucun plan trouver")
     else:
         print(f"Plan trouver en {len(plan)} etapes :")
-        for step, actions in enumerate(plan, start=1):
-            print(f"  etape {step}: {', '.join(a[0] for a in actions)}")
+        for actions in plan:
+            for action in actions:
+                if action[0].startswith("persist"):
+                    continue
+                print(f"{action[0]}")
 
 
 if __name__ == "__main__":
