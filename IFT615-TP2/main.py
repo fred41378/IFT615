@@ -231,7 +231,7 @@ def trace_niveau(level, act_layer, act_mutex, props, prop_mutex):
         print(f"   {p}")
 
     print(f"\n Mutex de faits ({len(prop_mutex)}) :")
-    for m in sorted(tuple(sorted(f"{p[0]}({','.join(m[1:])})" for p in pair))
+    for m in sorted(tuple(sorted(f"{p[0]}({','.join(p[1:])})" for p in pair))
                     for pair in prop_mutex):
         print(f"   {m[0]} <-> {m[1]}")
 
