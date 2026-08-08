@@ -283,7 +283,7 @@ def main():
     goal = set(all_facts.effects)
     all_act = all_actions(all_facts.objects)
 
-    plan = resoudre(initial_state, goal, all_act)
+    plan = resoudre(initial_state, goal, all_act, res[2])
 
     if plan is None:
         print("Aucun plan trouver")
