@@ -306,7 +306,7 @@ def DoPlan(r_ops, r_facts, trace=True):
     # Si on a une trace, on doit print le header
     if trace:
         print("\n/*-------------------------------------------------------------------------------*/")
-        print("/* ---------------- Description des conditions initiales et des objectifs -------*/")
+        print("/*-------------------------------- Plan------------------------------------------*/")
         print("/*-------------------------------------------------------------------------------*/\n")
 
     if plan is None:
@@ -330,6 +330,10 @@ def main():
     if not res:  # La lecture des inputs a echouee
         print("Erreur de lecture des fichiers: Abort")
         return
+
+    if res[2]:
+        print("IFT615 Devoir 2")
+        print("Equipe: Anais Lanthier, Frederick Taylor, Maxime Sevigny, Emile Robitaille\n")
 
     DoPlan(res[0], res[1], res[2])
 
