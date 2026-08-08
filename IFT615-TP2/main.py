@@ -1,46 +1,57 @@
+from itertools import product
+
 from input import read_inputs
 import parser
 
 # Tous les facts sont contenus dans cette variables
 all_facts = None
+# Tous les operations sont contenus dans cette variables
+all_ops = None
 
-# Retourne la liste de toutes les actions possible peut importe s'il sont valide ou non
+# Retourne la liste de toutes les actions possible peut importe si elles sont valides ou non
 def all_actions(objects):
     places = [object for object, type in objects.items() if type == "PLACE"]
     rockets = [object for object, type in objects.items() if type == "ROCKET"]
     cargos = [object for object, type in objects.items() if type == "CARGO"]
 
+    objects_by_type = {"PLACE": places, "ROCKET": rockets, "CARGO": cargos}
+
     actions = []
 
-    # Une action move pour chaque rocket et chaque paire de places (encore là, peut importe si elle sont valide)
-    for r in rockets:
-        for p1 in places:
-            for p2 in places:
-                if p1 == p2:
-                    continue
-                actions.append((
-                    f"move({r},{p1},{p2})",
-                    frozenset({("has-fuel", r), ("at", r, p1)}),
-                    frozenset({("at", r, p2)}),
-                    frozenset({("at", r, p1), ("has-fuel", r)}),
-                ))
+    for op in all_ops:
+        var_names = [v for v, _ in op.params]   # La liste des noms de variables Ex [<object>, <rocket>, <place>]
+        var_types = [t for _, t in op.params]   # Le type des variables Ex [CARGO, ROCKET, PLACE]
 
-    # load et unload pour chaque combinaison
-    for c in cargos:
-        for r in rockets:
-            for p in places:
-                actions.append((
-                    f"load({c},{r},{p})",
-                    frozenset({("at", r, p), ("at", c, p)}),
-                    frozenset({("in", c, r)}),
-                    frozenset({("at", c, p)}),
-                ))
-                actions.append((
-                    f"unload({c},{r},{p})",
-                    frozenset({("at", r, p), ("in", c, r)}),
-                    frozenset({("at", c, p)}),
-                    frozenset({("in", c, r)}),
-                ))
+        # Liste de listes de toutes les possibilites pour chaque variables
+        # Ex [ [__ Toutes les possibilites pour la variable 1__], [__ Toutes les possibilites pour la variable 2__] ]
+        domains = [objects_by_type.get(t, []) for t in var_types]
+
+        # pour tous les possibilites d'entrees, on doit verifier que l'entree est valide
+        for combo in product(*domains):
+            ok = True
+            for i in range(len(combo)):
+                for j in range(i + 1, len(combo)):
+                    if var_types[i] == var_types[j] and combo[i] == combo[j]:   # 2 variables ne peuvent pas avoir la meme valeur
+                        ok = False
+                        break
+                if not ok:
+                    break
+            if not ok:
+                continue
+
+            binding = dict(zip(var_names, combo))
+
+            # Substitue les noms de variables par le actual nom de l'objet
+            #   Ex: si <object> devient alex
+            def sub(lit):
+                return tuple(binding.get(x, x) for x in lit)
+
+            preconds = frozenset(sub(l) for l in op.preconds)
+            adds = frozenset(sub(l) for l in op.adds)
+            dels = frozenset(sub(l) for l in op.dels)
+            action_name = f"{op.name.lower()}(" + ",".join(combo) + ")" #
+
+            actions.append((action_name, preconds, adds, dels))
 
     return actions
 
@@ -270,6 +281,9 @@ def resoudre(initial_state, goal, all_act, trace=False):
     return None
 
 def DoPlan(r_ops, r_facts, trace=True):
+    global all_ops, all_facts
+
+    all_ops = parser.load_ops(r_ops)
     all_facts = parser.Facts(r_facts)
 
     initial_state = set(all_facts.preconds)
