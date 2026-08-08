@@ -11,4 +11,4 @@ Presenté à: Mohamed Mehdi Najjar
 
 ## Exemples de traces complètes
 Voir le dossier `Traces_completes_de_notre_implementation` qui contient les traces de **NOTRE** implémentation  
-Le dossier `Exemple_Solutions_Enonce` contient les exemples données dans l'énoncé et devrait être ignoré
+Le dossier `inputs` contient des exemples de fichiers d'entrée. Les fichiers test_fact3.txt et test_fact9.txt sont les exemples que nous avons construit nous-mêmes. Ils sont les fichiers ayant engendré les traces Trace3.txt et Trace9.txt.
