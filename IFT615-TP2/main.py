@@ -269,21 +269,14 @@ def resoudre(initial_state, goal, all_act, trace=False):
             trace_niveau(level, applicable, act_mutex, next_props, next_prop_mutex)
     return None
 
-
-def main():
-    res = read_inputs()
-
-    if not res:  # La lecture des inputs a echouee
-        print("Erreur de lecture des fichiers: Abort")
-        return
-
-    all_facts = parser.Facts(res[1])
+def DoPlan(r_ops, r_facts, trace=True):
+    all_facts = parser.Facts(r_facts)
 
     initial_state = set(all_facts.preconds)
     goal = set(all_facts.effects)
     all_act = all_actions(all_facts.objects)
 
-    plan = resoudre(initial_state, goal, all_act, res[2])
+    plan = resoudre(initial_state, goal, all_act, trace)
 
     if plan is None:
         print("Aucun plan trouver")
@@ -294,6 +287,16 @@ def main():
                 if action[0].startswith("persist"):
                     continue
                 print(f"{action[0]}")
+
+
+def main():
+    res = read_inputs()
+
+    if not res:  # La lecture des inputs a echouee
+        print("Erreur de lecture des fichiers: Abort")
+        return
+
+    DoPlan(res[0], res[1], res[2])
 
 
 if __name__ == "__main__":
