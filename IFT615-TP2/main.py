@@ -146,6 +146,9 @@ def build_mutex_adjacency(act_mutex):
     return adj
 
 def select_action_sets(goals, chosen, achiever_index, mutex_adj):
+    # Choisi une action pour chaque fait du goal, sans
+    # jamais prendre deux actions mutex ensemble
+
     if not goals:
         yield list(chosen)
         return
