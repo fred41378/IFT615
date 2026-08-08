@@ -1,4 +1,4 @@
-import facts
+import parser
 from input import read_inputs
 
 # Tous les facts sont contenus dans cette variables
@@ -224,7 +224,7 @@ def main():
         print("Erreur de lecture des fichiers: Abort")
         return
 
-    all_facts = facts.Facts(res[1])
+    all_facts = parser.Facts(res[1])
 
     initial_state = set(all_facts.preconds)
     goal = set(all_facts.effects)
