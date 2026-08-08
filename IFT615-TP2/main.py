@@ -281,7 +281,7 @@ def resoudre(initial_state, goal, all_act, trace=False):
     return None
 
 def DoPlan(r_ops, r_facts, trace=True):
-    global all_ops,all_facts
+    global all_ops, all_facts
 
     all_ops = parser.load_ops(r_ops)
     all_facts = parser.Facts(r_facts)
