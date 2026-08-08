@@ -8,7 +8,7 @@ all_facts = None
 # Tous les operations sont contenus dans cette variables
 all_ops = None
 
-# Retourne la liste de toutes les actions possible peut importe s'il sont valide ou non
+# Retourne la liste de toutes les actions possible peut importe si elles sont valides ou non
 def all_actions(objects):
     places = [object for object, type in objects.items() if type == "PLACE"]
     rockets = [object for object, type in objects.items() if type == "ROCKET"]
@@ -19,29 +19,38 @@ def all_actions(objects):
     actions = []
 
     for op in all_ops:
-        var_names = [v for v, _ in op.params]
-        var_types = [t for _, t in op.params]
+        var_names = [v for v, _ in op.params]   # La liste des noms de variables Ex [<object>, <rocket>, <place>]
+        var_types = [t for _, t in op.params]   # Le type des variables Ex [CARGO, ROCKET, PLACE]
+
+        # Liste de listes de toutes les possibilites pour chaque variables
+        # Ex [ [__ Toutes les possibilites pour la variable 1__], [__ Toutes les possibilites pour la variable 2__] ]
         domains = [objects_by_type.get(t, []) for t in var_types]
+
+        # pour tous les possibilites d'entrees, on doit verifier que l'entree est valide
         for combo in product(*domains):
             ok = True
             for i in range(len(combo)):
                 for j in range(i + 1, len(combo)):
-                    if var_types[i] == var_types[j] and combo[i] == combo[j]:
+                    if var_types[i] == var_types[j] and combo[i] == combo[j]:   # 2 variables ne peuvent pas avoir la meme valeur
                         ok = False
                         break
                 if not ok:
                     break
             if not ok:
                 continue
+
             binding = dict(zip(var_names, combo))
 
+            # Substitue les noms de variables par le actual nom de l'objet
+            #   Ex: si <object> devient alex
             def sub(lit):
                 return tuple(binding.get(x, x) for x in lit)
 
             preconds = frozenset(sub(l) for l in op.preconds)
             adds = frozenset(sub(l) for l in op.adds)
             dels = frozenset(sub(l) for l in op.dels)
-            action_name = f"{op.name.lower()}(" + ",".join(combo) + ")"
+            action_name = f"{op.name.lower()}(" + ",".join(combo) + ")" #
+
             actions.append((action_name, preconds, adds, dels))
 
     return actions
