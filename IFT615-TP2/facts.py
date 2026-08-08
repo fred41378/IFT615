@@ -1,3 +1,6 @@
+# Tous les facts sont contenus dans cette variables
+all_facts = ""
+
 def prepare(text):
     return text.replace("(", " ( ").replace(")", " ) ").split()
 
@@ -53,4 +56,6 @@ class Facts:
     def get_all_objects(self):
         return self.objects
 
-facts = Facts("r_fact9.txt")
+def create_fact(file):
+    global all_facts
+    all_facts = Facts(file)

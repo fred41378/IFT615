@@ -1,0 +1,33 @@
+
+(London PLACE)
+(Paris PLACE)
+(JFK PLACE)
+(r1 ROCKET)
+(r2 ROCKET)
+(mxf CARGO)
+(avrim CARGO)
+(alex CARGO)
+(jason CARGO)
+(pencil CARGO)
+(paper CARGO)
+
+(preconds
+(at r1 London)
+(at r2 London)
+(at mxf London)
+(at avrim London)
+(at alex London)
+(at jason London)
+(at pencil London)
+(at paper London)
+(has-fuel r1)
+(has-fuel r2))
+
+(effects
+(at mxf Paris)  
+(at jason JFK)
+(at alex Paris)
+(at pencil JFK)
+(at avrim Paris)
+(at paper JFK))
+
