@@ -283,8 +283,8 @@ def resoudre(initial_state, goal, all_act, trace=False):
 def DoPlan(r_ops, r_facts, trace=True):
     global all_ops, all_facts
 
-    all_ops = parser.load_ops(r_ops)
-    all_facts = parser.Facts(r_facts)
+    all_ops = parser.load_ops(r_ops, trace)
+    all_facts = parser.Facts(r_facts, trace)
 
     initial_state = set(all_facts.preconds)
     goal = set(all_facts.effects)
