@@ -1,0 +1,28 @@
+
+(London PLACE)
+(Paris PLACE)
+(JFK PLACE)
+(Montreal PLACE)
+(r1 ROCKET)
+(r2 ROCKET)
+(r3 ROCKET)
+(alex CARGO)
+(jason CARGO)
+(bill CARGO)
+
+(preconds
+(at r1 London)
+(at r2 London)
+(at r3 Paris)
+(at alex London)
+(at jason London)
+(at bill London)
+(has-fuel r1)
+(has-fuel r2)
+(has-fuel r3))
+
+(effects
+(at alex Paris)
+(at jason JFK)
+(at bill Montreal))
+

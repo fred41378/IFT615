@@ -1,5 +1,8 @@
+from input import read_inputs
 from parser import facts
 
+# Tous les facts sont contenus dans cette variables
+all_facts = None
 
 # Retourne la liste de toutes les actions possible peut importe s'il sont valide ou non
 def all_actions(objects):
@@ -214,10 +217,18 @@ def resoudre(initial_state, goal, all_act):
     return None
 
 
-if __name__ == "__main__":
-    initial_state = set(facts.preconds)
-    goal = set(facts.effects)
-    all_act = all_actions(facts.objects)
+def main():
+    res = read_inputs()
+
+    if not res:  # La lecture des inputs a echouee
+        print("Erreur de lecture des fichiers: Abort")
+        return
+
+    all_facts = parser.Facts(res[1])
+
+    initial_state = set(all_facts.preconds)
+    goal = set(all_facts.effects)
+    all_act = all_actions(all_facts.objects)
 
     plan = resoudre(initial_state, goal, all_act)
 
@@ -227,3 +238,7 @@ if __name__ == "__main__":
         print(f"Plan trouver en {len(plan)} etapes :")
         for step, actions in enumerate(plan, start=1):
             print(f"  etape {step}: {', '.join(a[0] for a in actions)}")
+
+
+if __name__ == "__main__":
+    main()
